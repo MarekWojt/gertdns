@@ -1,18 +1,23 @@
 package config
 
-var Config *Configuration = nil
-
 type Configuration struct {
 	Port    uint16
 	Host    string
 	Domains []string
 }
 
-func Load() error {
-	Config = &Configuration{
+var (
+	Config Configuration
+
+	defaultConfig = Configuration{
 		Port:    5353,
 		Host:    "0.0.0.0",
 		Domains: []string{},
 	}
-	return nil
+)
+
+func Load(configFilePath string) error {
+	config, err := loadConfFile(configFilePath)
+	Config = config
+	return err
 }
