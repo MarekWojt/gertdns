@@ -20,8 +20,10 @@ func main() {
 		log.Fatalf("Failed to load configuration: %s\n ", err.Error())
 	}
 
-	err = dns.Run()
+	dns.Load()
+	server, err := dns.Run()
 	if err != nil {
 		log.Fatalf("Failed to start DNS server: %s\n ", err.Error())
 	}
+	defer server.Shutdown()
 }
