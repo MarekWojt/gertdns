@@ -16,7 +16,8 @@ var (
 	}
 )
 
-func Load(configFilePath string) (*Configuration, error) {
-	Config, err := loadConfFile(configFilePath)
-	return &Config, err
+func Load(configFilePath string) error {
+	config, err := loadConfFile(configFilePath)
+	Config = config
+	return err
 }
