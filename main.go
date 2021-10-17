@@ -15,9 +15,12 @@ var (
 func main() {
 	flag.Parse()
 
-	config.Load(*configFile)
+	_, err := config.Load(*configFile)
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %s\n ", err.Error())
+	}
 
-	err := dns.Run()
+	err = dns.Run()
 	if err != nil {
 		log.Fatalf("Failed to start DNS server: %s\n ", err.Error())
 	}
