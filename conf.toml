@@ -1,0 +1,3 @@
+Port = 5353
+Host = '0.0.0.0'
+Domains = []
