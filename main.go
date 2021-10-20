@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/MarekWojt/gertdns/auth"
 	"github.com/MarekWojt/gertdns/config"
 	"github.com/MarekWojt/gertdns/dns"
 	"github.com/MarekWojt/gertdns/web"
@@ -11,7 +12,8 @@ import (
 )
 
 var (
-	configFile = flag.String("configFile", "conf.toml", "Path to configuration file")
+	configFile = flag.String("config-file", "conf.toml", "Path to configuration file")
+	authFile   = flag.String("auth-file", "auth.toml", "Path to authentication file")
 )
 
 type dnsResult struct {
@@ -29,6 +31,10 @@ func main() {
 
 	dns.Init()
 	web.Init()
+	err = auth.Init(*authFile)
+	if err != nil {
+		log.Fatalf("Failed to initialize authentication module: %s\n", err.Error())
+	}
 
 	webChan := make(chan error)
 	dnsChan := make(chan dnsResult)

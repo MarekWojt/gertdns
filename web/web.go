@@ -108,13 +108,13 @@ func authenticatedRequest(request func(ctx *fasthttp.RequestCtx)) func(ctx *fast
 			return
 		}
 
-		authRequest := auth.AuthenticationRequest{
+		authRequest := auth.PasswordAuthenticationRequest{
 			Domain:   domain,
 			User:     user,
 			Password: password,
 		}
 
-		authenticated, err := auth.IsAuthenticated(authRequest)
+		authenticated, err := auth.IsPasswordAuthenticated(authRequest)
 		if err != nil {
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			return

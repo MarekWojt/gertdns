@@ -1,0 +1,5 @@
+[username]
+Password = '1234' # will be converted on start
+Domains = [
+  'subdomain.example.com.',
+]
