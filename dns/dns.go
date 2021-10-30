@@ -19,51 +19,7 @@ type domain struct {
 	Ipv6  map[string]string
 }
 
-var domains = []*domain{}
-
-func parseQuery(m *dns.Msg, currentDomain *domain) {
-	for _, q := range m.Question {
-		switch q.Qtype {
-		case dns.TypeA:
-			log.Printf("Query for A record of %s\n", q.Name)
-			currentDomain.Mutv4.RLock()
-			ip := currentDomain.Ipv4[q.Name]
-			currentDomain.Mutv4.RUnlock()
-			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
-				if err == nil {
-					m.Answer = append(m.Answer, rr)
-				}
-			}
-		case dns.TypeAAAA:
-			log.Printf("Query for AAAA record of %s\n", q.Name)
-			currentDomain.Mutv6.RLock()
-			ip := currentDomain.Ipv6[q.Name]
-			currentDomain.Mutv6.RUnlock()
-			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s AAAA %s", q.Name, ip))
-				if err == nil {
-					m.Answer = append(m.Answer, rr)
-				}
-			}
-		}
-	}
-}
-
-func handleDnsRequest(currentDomain *domain) func(w dns.ResponseWriter, r *dns.Msg) {
-	return func(w dns.ResponseWriter, r *dns.Msg) {
-		m := new(dns.Msg)
-		m.SetReply(r)
-		m.Compress = false
-
-		switch r.Opcode {
-		case dns.OpcodeQuery:
-			parseQuery(m, currentDomain)
-		}
-
-		w.WriteMsg(m)
-	}
-}
+var domains []*domain = make([]*domain, 0)
 
 func Init() {
 	for _, currentDomain := range config.Config.DNS.Domains {
@@ -124,4 +80,48 @@ func UpdateIpv4(domain string, ipv4 string) (err error) {
 
 func Get() []*domain {
 	return domains
+}
+
+func parseQuery(m *dns.Msg, currentDomain *domain) {
+	for _, q := range m.Question {
+		switch q.Qtype {
+		case dns.TypeA:
+			log.Printf("Query for A record of %s\n", q.Name)
+			currentDomain.Mutv4.RLock()
+			ip := currentDomain.Ipv4[q.Name]
+			currentDomain.Mutv4.RUnlock()
+			if ip != "" {
+				rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
+				if err == nil {
+					m.Answer = append(m.Answer, rr)
+				}
+			}
+		case dns.TypeAAAA:
+			log.Printf("Query for AAAA record of %s\n", q.Name)
+			currentDomain.Mutv6.RLock()
+			ip := currentDomain.Ipv6[q.Name]
+			currentDomain.Mutv6.RUnlock()
+			if ip != "" {
+				rr, err := dns.NewRR(fmt.Sprintf("%s AAAA %s", q.Name, ip))
+				if err == nil {
+					m.Answer = append(m.Answer, rr)
+				}
+			}
+		}
+	}
+}
+
+func handleDnsRequest(currentDomain *domain) func(w dns.ResponseWriter, r *dns.Msg) {
+	return func(w dns.ResponseWriter, r *dns.Msg) {
+		m := new(dns.Msg)
+		m.SetReply(r)
+		m.Compress = false
+
+		switch r.Opcode {
+		case dns.OpcodeQuery:
+			parseQuery(m, currentDomain)
+		}
+
+		w.WriteMsg(m)
+	}
 }

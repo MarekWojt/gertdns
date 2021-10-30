@@ -8,11 +8,11 @@ go run main.go
 
 Bullding:
 ```sh
-go build main.go
+go build
 ```
 
 ## Config
-`conf.toml` by default
+Default `conf.toml`
 ```toml
 [DNS]
 Port    = 5353               # DNS server port
@@ -27,7 +27,7 @@ SocketFileMode = 420         # File mode for HTTP unix socket in decimal (420 = 
 ```
 
 ## Users
-`auth.toml` by default
+Default `auth.toml`
 ```toml
 [someusername]  # user name of the user
 Password = '1234'                     # password of the user

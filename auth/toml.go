@@ -14,7 +14,7 @@ func loadAuthFile(authFilePath string) (map[string]*userRaw, error) {
 	if err != nil {
 		color.Errorln(err.Error())
 		color.Warnln("Creating new authentication file")
-		return writeAuthFile(authFilePath, map[string]*userRaw{})
+		return writeAuthFile(authFilePath, make(map[string]*userRaw))
 	}
 
 	var users map[string]*userRaw

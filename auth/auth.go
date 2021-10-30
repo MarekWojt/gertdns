@@ -23,7 +23,7 @@ type user struct {
 	domains  map[string]string
 }
 
-var parsedUsers map[string]user = map[string]user{}
+var parsedUsers map[string]user = make(map[string]user)
 
 func (user user) Authenticate(password string) (bool, error) {
 	return argon2pw.CompareHashWithPassword(user.password, password)
@@ -40,7 +40,7 @@ func (selfUser *userRaw) Tidy() (user, error) {
 	}
 
 	// Create a map => faster access times
-	parsedDomains := map[string]string{}
+	parsedDomains := make(map[string]string)
 	for _, domain := range selfUser.Domains {
 		parsedDomains[domain] = domain
 	}
