@@ -1,7 +1,6 @@
 package web
 
 import (
-	"flag"
 	"fmt"
 	"io/fs"
 	"log"
@@ -13,10 +12,51 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-var enableDebugMode *bool = flag.Bool("enable-debug-mode", false, "Enables debug mode, will output a list of ")
+var (
+	enableDebugMode bool
+	r               *router.Router
+	ipv4Param       = []byte("ipv4")
+	ipv6Param       = []byte("ipv6")
+	userParam       = []byte("user")
+	passwordParam   = []byte("password")
+)
+
+func Init(debugMode bool) {
+	enableDebugMode = debugMode
+	r = router.New()
+	r.GET("/", index)
+	r.GET("/update/{domain}/v4", authenticatedRequest(updateV4))
+	r.GET("/update/{domain}/v6", authenticatedRequest(updateV6))
+}
+
+func RunSocket() error {
+	httpConfig := config.Config.HTTP
+	if httpConfig.Socket != "" {
+		log.Printf("Starting HTTP socket in %s with permission %d\n", httpConfig.Socket, httpConfig.SocketFileMode)
+		err := fasthttp.ListenAndServeUNIX(httpConfig.Socket, fs.FileMode(httpConfig.SocketFileMode), r.Handler)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func RunHTTP() error {
+	httpConfig := config.Config.HTTP
+	if httpConfig.Host != "" {
+		log.Printf("Starting HTTP server on %s:%d\n", httpConfig.Host, httpConfig.Port)
+		err := fasthttp.ListenAndServe(fmt.Sprintf("%s:%d", httpConfig.Host, httpConfig.Port), r.Handler)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func index(ctx *fasthttp.RequestCtx) {
-	if !*enableDebugMode {
+	if !enableDebugMode {
 		ctx.WriteString("Working")
 	} else {
 		domains := dns.Get()
@@ -42,11 +82,6 @@ func index(ctx *fasthttp.RequestCtx) {
 		ctx.WriteString("</table></body></html>")
 	}
 }
-
-var ipv4Param = []byte("ipv4")
-var ipv6Param = []byte("ipv6")
-var userParam = []byte("user")
-var passwordParam = []byte("password")
 
 func updateV4(ctx *fasthttp.RequestCtx) {
 	domain := ctx.UserValue("domain").(string)
@@ -127,39 +162,4 @@ func authenticatedRequest(request func(ctx *fasthttp.RequestCtx)) func(ctx *fast
 
 		request(ctx)
 	}
-}
-
-var r *router.Router
-
-func Init() {
-	r = router.New()
-	r.GET("/", index)
-	r.GET("/update/{domain}/v4", authenticatedRequest(updateV4))
-	r.GET("/update/{domain}/v6", authenticatedRequest(updateV6))
-}
-
-func RunSocket() error {
-	httpConfig := config.Config.HTTP
-	if httpConfig.Socket != "" {
-		log.Printf("Starting HTTP socket in %s with permission %d\n", httpConfig.Socket, httpConfig.SocketFileMode)
-		err := fasthttp.ListenAndServeUNIX(httpConfig.Socket, fs.FileMode(httpConfig.SocketFileMode), r.Handler)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func RunHTTP() error {
-	httpConfig := config.Config.HTTP
-	if httpConfig.Host != "" {
-		log.Printf("Starting HTTP server on %s:%d\n", httpConfig.Host, httpConfig.Port)
-		err := fasthttp.ListenAndServe(fmt.Sprintf("%s:%d", httpConfig.Host, httpConfig.Port), r.Handler)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	configFile = flag.String("config-file", "conf.toml", "Path to configuration file")
-	authFile   = flag.String("auth-file", "auth.toml", "Path to authentication file")
+	configFile      = flag.String("config-file", "conf.toml", "Path to configuration file")
+	authFile        = flag.String("auth-file", "auth.toml", "Path to authentication file")
+	enableDebugMode = flag.Bool("enable-debug-mode", false, "Enables debug mode, will output a list of all registered records on the index page of the HTTP server")
 )
 
 type dnsResult struct {
@@ -30,7 +31,7 @@ func main() {
 	}
 
 	dns.Init()
-	web.Init()
+	web.Init(*enableDebugMode)
 	err = auth.Init(*authFile)
 	if err != nil {
 		log.Fatalf("Failed to initialize authentication module: %s\n", err.Error())

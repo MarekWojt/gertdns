@@ -8,11 +8,11 @@ go run main.go
 
 Bullding:
 ```sh
-go build main.go
+go build
 ```
 
 ## Config
-`conf.toml` by default
+Default `conf.toml`
 ```toml
 [DNS]
 Port    = 5353               # DNS server port
@@ -27,7 +27,7 @@ SocketFileMode = 420         # File mode for HTTP unix socket in decimal (420 = 
 ```
 
 ## Users
-`auth.toml` by default
+Default `auth.toml`
 ```toml
 [someusername]  # user name of the user
 Password = '1234'                     # password of the user
@@ -39,17 +39,17 @@ Domains  = ["subdomain.example.com."] # domains the user can register, suffix wi
 
 ## Flags
 ### --enable-debug-mode
-Will output all registered records on the index page of the HTTP server.  
-Type: `bool`  
+Will output all registered records on the index page of the HTTP server.
+Type: `bool`
 Default: `false`
 
 ### --config-file
-Will define what config file should be used.  
-Type: `string`  
+Will define what config file should be used.
+Type: `string`
 Default: `conf.toml`
 
 
 ### --auth-file
-Will define what file should be used to define users that can log in.  
-Type: `string`  
+Will define what file should be used to define users that can log in.
+Type: `string`
 Default: `auth.toml`
