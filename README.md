@@ -39,17 +39,17 @@ Domains  = ["subdomain.example.com."] # domains the user can register, suffix wi
 
 ## Flags
 ### --enable-debug-mode
-Will output all registered records on the index page of the HTTP server.
-Type: `bool`
+Will output all registered records on the index page of the HTTP server.  
+Type: `bool`  
 Default: `false`
 
 ### --config-file
-Will define what config file should be used.
-Type: `string`
+Will define what config file should be used.  
+Type: `string`  
 Default: `conf.toml`
 
 
 ### --auth-file
-Will define what file should be used to define users that can log in.
-Type: `string`
+Will define what file should be used to define users that can log in.  
+Type: `string`  
 Default: `auth.toml`
