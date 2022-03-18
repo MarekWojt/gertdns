@@ -53,3 +53,28 @@ Default: `conf.toml`
 Will define what file should be used to define users that can log in.  
 Type: `string`  
 Default: `auth.toml`
+
+### --data-path
+Will define where stored data is put (i.e. IP addresses for subdomains). All records will be saved here every second if they have been changed and when the application gets shut down.  
+Type: `string`  
+Default: `./`
+
+## Routes
+### `/`
+If in debug mode, will output all registered records, otherwise prints `"Working"`.
+
+### `/update/{domain}/{type}`
+Updates a given record.  
+#### URL parts
+`domain` (`string`): defines the subdomain that is to be modified  
+`type` (`"v4"` | `"v6"`): specifies whether an IPv4 or IPv6 record is to be changed.  
+#### query parameters
+`ipv4` (`string`) (only if `type` is `"v4"`): specifies the IPv4 address to be applied.  
+`ipv6` (`string`) (only if `type` is `"v6"`): specifies the IPv6 address to be applied.  
+`user` (`string`): username as specified in _auth file_.
+`password` (`string`): password as specified in _auth file_.
+
+#### examples
+/update/**example.example**/**v4**?ipv4=**127.0.0.1**&user=**username**&password=**password**  
+
+/update/**example.example**/**v6**?ipv6=**::1**&user=**username**&password=**password**  

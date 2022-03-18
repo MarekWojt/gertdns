@@ -8,6 +8,7 @@ import (
 	"github.com/MarekWojt/gertdns/auth"
 	"github.com/MarekWojt/gertdns/config"
 	"github.com/MarekWojt/gertdns/dns"
+	"github.com/MarekWojt/gertdns/util"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
 )
@@ -85,6 +86,7 @@ func index(ctx *fasthttp.RequestCtx) {
 
 func updateV4(ctx *fasthttp.RequestCtx) {
 	domain := ctx.UserValue("domain").(string)
+	domain = util.ParseDomain(domain)
 	ipv4 := string(ctx.QueryArgs().PeekBytes(ipv4Param))
 	if ipv4 == "" {
 		ctx.WriteString("Missing ipv4 query parameter")
@@ -104,6 +106,7 @@ func updateV4(ctx *fasthttp.RequestCtx) {
 
 func updateV6(ctx *fasthttp.RequestCtx) {
 	domain := ctx.UserValue("domain").(string)
+	domain = util.ParseDomain(domain)
 	ipv6 := string(ctx.QueryArgs().PeekBytes(ipv6Param))
 	if ipv6 == "" {
 		ctx.WriteString("Missing ipv6 query parameter")
@@ -129,6 +132,7 @@ func authenticatedRequest(request func(ctx *fasthttp.RequestCtx)) func(ctx *fast
 			ctx.SetStatusCode(fasthttp.StatusBadRequest)
 			return
 		}
+		domain = util.ParseDomain(domain)
 
 		user := string(ctx.QueryArgs().PeekBytes(userParam))
 		if user == "" {
