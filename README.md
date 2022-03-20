@@ -57,7 +57,7 @@ Default: `auth.toml`
 ### --data-path
 Will define where stored data is put (i.e. IP addresses for subdomains). All records will be saved here every second if they have been changed and when the application gets shut down.  
 Type: `string`  
-Default: `./`
+Default: `.`
 
 ## Routes
 ### `/`

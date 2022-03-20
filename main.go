@@ -17,7 +17,7 @@ import (
 var (
 	configFile      = flag.String("config-file", "conf.toml", "Path to configuration file")
 	authFile        = flag.String("auth-file", "auth.toml", "Path to authentication file")
-	dataPath        = flag.String("data-path", "./", "Where to save data")
+	dataPath        = flag.String("data-path", ".", "Where to save data")
 	enableDebugMode = flag.Bool("enable-debug-mode", false, "Enables debug mode, will output a list of all registered records on the index page of the HTTP server")
 )
 
