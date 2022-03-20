@@ -89,29 +89,30 @@ func loadFile(ty string, currentDomain *domain) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		color.Warnf("Could not load file for domain %s: %s\n", currentDomain.Root, err)
-	} else {
-		log.Printf("Reading file: %s", filePath)
-		scanner := bufio.NewScanner(f)
-
-		lineCounter := 0
-		for scanner.Scan() {
-			lineCounter++
-			currentLine := scanner.Text()
-			cols := strings.Split(currentLine, "\t")
-			if len(cols) < 2 {
-				color.Warnf("Error reading line %d of ipv4 addresses for domain %s: too few columns\n", lineCounter, currentDomain.Root)
-				continue
-			}
-
-			if ty == IPV4_FILE {
-				currentDomain.Ipv4[cols[0]] = cols[1]
-			} else if ty == IPV6_FILE {
-				currentDomain.Ipv6[cols[0]] = cols[1]
-			}
-		}
-		color.Infof("Read file: %s\n", filePath)
+		return
 	}
-	f.Close()
+	defer f.Close()
+
+	log.Printf("Reading file: %s", filePath)
+	scanner := bufio.NewScanner(f)
+
+	lineCounter := 0
+	for scanner.Scan() {
+		lineCounter++
+		currentLine := scanner.Text()
+		cols := strings.Split(currentLine, "\t")
+		if len(cols) < 2 {
+			color.Warnf("Error reading line %d of ipv4 addresses for domain %s: too few columns\n", lineCounter, currentDomain.Root)
+			continue
+		}
+
+		if ty == IPV4_FILE {
+			currentDomain.Ipv4[cols[0]] = cols[1]
+		} else if ty == IPV6_FILE {
+			currentDomain.Ipv6[cols[0]] = cols[1]
+		}
+	}
+	color.Infof("Read file: %s\n", filePath)
 }
 
 func Init(dataPath string) {
