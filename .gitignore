@@ -2,3 +2,5 @@ gertdns
 gertdns.exe
 conf.toml
 auth.toml
+*.v4.csv
+*.v6.csv

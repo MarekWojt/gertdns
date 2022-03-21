@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/MarekWojt/gertdns/auth"
 	"github.com/MarekWojt/gertdns/config"
@@ -14,6 +17,7 @@ import (
 var (
 	configFile      = flag.String("config-file", "conf.toml", "Path to configuration file")
 	authFile        = flag.String("auth-file", "auth.toml", "Path to authentication file")
+	dataPath        = flag.String("data-path", ".", "Where to save data")
 	enableDebugMode = flag.Bool("enable-debug-mode", false, "Enables debug mode, will output a list of all registered records on the index page of the HTTP server")
 )
 
@@ -30,7 +34,7 @@ func main() {
 		log.Fatalf("Failed to load configuration: %s\n ", err.Error())
 	}
 
-	dns.Init()
+	dns.Init(*dataPath)
 	web.Init(*enableDebugMode)
 	err = auth.Init(*authFile)
 	if err != nil {
@@ -69,8 +73,17 @@ func main() {
 		webChan <- err
 	}()
 
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
+	go func() {
+		<-c
+		dns.Shutdown()
+		os.Exit(0)
+	}()
+
 	currentDnsResult := <-dnsChan
 	defer currentDnsResult.server.Shutdown()
+	defer dns.Shutdown()
 	<-webChan
 	<-webChan
 }

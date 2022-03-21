@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"log"
-
 	"github.com/raja/argon2pw"
 )
 
@@ -73,8 +71,6 @@ func Init(authFilePath string) error {
 	}
 
 	for name, user := range users {
-		log.Printf("%s\n", name)
-		log.Printf("%+v\n", user)
 		parsedUser, err := user.Tidy()
 		if err != nil {
 			return err
