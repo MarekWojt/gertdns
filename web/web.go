@@ -28,6 +28,7 @@ func Init(debugMode bool) {
 	r.GET("/", index)
 	r.GET("/update/{domain}/v4", authenticatedRequest(updateV4))
 	r.GET("/update/{domain}/v6", authenticatedRequest(updateV6))
+	r.GET("/update/{domain}", authenticatedRequest(update))
 }
 
 func RunSocket() error {
@@ -119,6 +120,40 @@ func updateV6(ctx *fasthttp.RequestCtx) {
 		ctx.WriteString(err.Error())
 		ctx.SetStatusCode(fasthttp.StatusNotFound)
 		return
+	}
+
+	ctx.WriteString("OK")
+}
+
+func update(ctx *fasthttp.RequestCtx) {
+	domain := ctx.UserValue("domain").(string)
+	domain = util.ParseDomain(domain)
+
+	ipv4 := string(ctx.QueryArgs().PeekBytes(ipv4Param))
+	ipv6 := string(ctx.QueryArgs().PeekBytes(ipv6Param))
+
+	if ipv4 == "" && ipv6 == "" {
+		ctx.WriteString("Provide at least one these query parameters: ipv4, ipv6")
+		ctx.SetStatusCode(fasthttp.StatusBadRequest)
+		return
+	}
+
+	if ipv4 != "" {
+		err := dns.UpdateIpv4(domain, ipv4)
+		if err != nil {
+			ctx.WriteString(err.Error())
+			ctx.SetStatusCode(fasthttp.StatusNotFound)
+			return
+		}
+	}
+
+	if ipv6 != "" {
+		err := dns.UpdateIpv4(domain, ipv4)
+		if err != nil {
+			ctx.WriteString(err.Error())
+			ctx.SetStatusCode(fasthttp.StatusNotFound)
+			return
+		}
 	}
 
 	ctx.WriteString("OK")
