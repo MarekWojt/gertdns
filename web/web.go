@@ -133,7 +133,7 @@ func update(ctx *fasthttp.RequestCtx) {
 	ipv6 := string(ctx.QueryArgs().PeekBytes(ipv6Param))
 
 	if ipv4 == "" && ipv6 == "" {
-		ctx.WriteString("Missing ipv6 or ipv4 query parameter")
+		ctx.WriteString("Provide at least one these query parameters: ipv4, ipv6")
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 		return
 	}
