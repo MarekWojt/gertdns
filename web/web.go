@@ -190,11 +190,13 @@ func authenticatedRequest(request func(ctx *fasthttp.RequestCtx)) func(ctx *fast
 
 		authenticated, err := auth.IsPasswordAuthenticated(authRequest)
 		if err != nil {
+			ctx.WriteString("Internal server error")
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			return
 		}
 
 		if !authenticated {
+			ctx.WriteString("Authentication failed")
 			ctx.SetStatusCode(fasthttp.StatusForbidden)
 			return
 		}
