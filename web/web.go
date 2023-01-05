@@ -148,7 +148,7 @@ func update(ctx *fasthttp.RequestCtx) {
 	}
 
 	if ipv6 != "" {
-		err := dns.UpdateIpv4(domain, ipv4)
+		err := dns.UpdateIpv6(domain, ipv6)
 		if err != nil {
 			ctx.WriteString(err.Error())
 			ctx.SetStatusCode(fasthttp.StatusNotFound)
