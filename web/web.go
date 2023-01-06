@@ -148,7 +148,7 @@ func update(ctx *fasthttp.RequestCtx) {
 	}
 
 	if ipv6 != "" {
-		err := dns.UpdateIpv4(domain, ipv4)
+		err := dns.UpdateIpv6(domain, ipv6)
 		if err != nil {
 			ctx.WriteString(err.Error())
 			ctx.SetStatusCode(fasthttp.StatusNotFound)
@@ -190,11 +190,13 @@ func authenticatedRequest(request func(ctx *fasthttp.RequestCtx)) func(ctx *fast
 
 		authenticated, err := auth.IsPasswordAuthenticated(authRequest)
 		if err != nil {
+			ctx.WriteString("Internal server error")
 			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 			return
 		}
 
 		if !authenticated {
+			ctx.WriteString("Authentication failed")
 			ctx.SetStatusCode(fasthttp.StatusForbidden)
 			return
 		}

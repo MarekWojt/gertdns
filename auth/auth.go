@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/MarekWojt/gertdns/util"
 	"github.com/raja/argon2pw"
 )
 
@@ -40,7 +41,8 @@ func (selfUser *userRaw) Tidy() (user, error) {
 	// Create a map => faster access times
 	parsedDomains := make(map[string]string)
 	for _, domain := range selfUser.Domains {
-		parsedDomains[domain] = domain
+		parsedDomain := util.ParseDomain(domain)
+		parsedDomains[parsedDomain] = parsedDomain
 	}
 
 	parsedUser := user{
