@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+
 	"github.com/MarekWojt/gertdns/util"
 	"github.com/raja/argon2pw"
 )
@@ -56,11 +58,11 @@ func (selfUser *userRaw) Tidy() (user, error) {
 func IsPasswordAuthenticated(request PasswordAuthenticationRequest) (bool, error) {
 	currentUser, found := parsedUsers[request.User]
 	if !found {
-		return false, nil
+		return false, errors.New("user does not exist")
 	}
 
 	if _, ok := currentUser.domains[request.Domain]; !ok {
-		return false, nil
+		return false, errors.New("user does not have access to this domain")
 	}
 
 	return currentUser.Authenticate(request.Password)
