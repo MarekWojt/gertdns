@@ -205,7 +205,7 @@ func parseQuery(m *dns.Msg, currentDomain *domain) {
 			ip := currentDomain.Ipv4[q.Name]
 			currentDomain.Mutv4.RUnlock()
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s 60 IN A %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf("%s 300 IN A %s", q.Name, ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
@@ -216,7 +216,7 @@ func parseQuery(m *dns.Msg, currentDomain *domain) {
 			ip := currentDomain.Ipv6[q.Name]
 			currentDomain.Mutv6.RUnlock()
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s 60 IN AAAA %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf("%s 300 IN AAAA %s", q.Name, ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
