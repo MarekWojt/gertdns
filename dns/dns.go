@@ -200,23 +200,21 @@ func parseQuery(m *dns.Msg, currentDomain *domain) {
 	for _, q := range m.Question {
 		switch q.Qtype {
 		case dns.TypeA:
-			log.Printf("Query for A record of %s\n", q.Name)
 			currentDomain.Mutv4.RLock()
 			ip := currentDomain.Ipv4[q.Name]
 			currentDomain.Mutv4.RUnlock()
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf(q.Name + " 300 IN A " + ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
 			}
 		case dns.TypeAAAA:
-			log.Printf("Query for AAAA record of %s\n", q.Name)
 			currentDomain.Mutv6.RLock()
 			ip := currentDomain.Ipv6[q.Name]
 			currentDomain.Mutv6.RUnlock()
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s AAAA %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf(q.Name + " 300 IN AAAA " + ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
